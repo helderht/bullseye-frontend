@@ -1,0 +1,28 @@
+#toast-container > .toast-success,
+#toast-container > .toast-info,
+#toast-container > .toast-warning,
+#toast-container > .toast-error {
+  background-image: none !important;
+}
+#toast-container > div {
+  box-shadow: none;
+  border-radius: 0;
+  opacity: 0.9;
+  color: #ffffff;
+  padding: 15px;
+}
+#toast-container > div:hover {
+  box-shadow: none;
+}
+.toast-success {
+  background-color: #28a745;
+}
+.toast-info {
+  background-color: #17a2b8;
+}
+.toast-warning {
+  background-color: #ffc107;
+}
+.toast-error {
+  background-color: #dc3545;
+}
