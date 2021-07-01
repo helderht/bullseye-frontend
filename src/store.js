@@ -37,17 +37,7 @@ export default new vuex.Store({
       if (token) {
         const {exp} = jwtDecode(token)
         if (exp <= moment().unix()) {
-          axios
-            .post('refresh', {token})
-            .then(res => {
-              commit('setToken', res.data)
-              commit('setUser', jwtDecode(res.data))
-              localStorage.setItem('token', res.data)
-              router.push({name: 'board'})
-            })
-            .catch(e => {
-              console.log(e)
-            })
+          localStorage.removeItem('token')
         } else {
           commit('setToken', token)
           commit('setUser', jwtDecode(token))
