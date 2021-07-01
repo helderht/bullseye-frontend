@@ -12,21 +12,32 @@
           </router-link>
         </div>
         <div class="card">
-          <div class="card-body">
-            <h5 class="text-center mt-4">Bienvenido</h5>
-            <div class="w-25 m-auto py4">
-              <img class="img-fluid" src="../assets/user.svg" alt="user" />
-            </div>
+          <div class="card-body pt-3">
+            <h5 class="text-center">Registro</h5>
             <form
-              id="formSignin"
+              id="formSignup"
               class="needs-validation"
-              @submit.prevent="signin"
+              @submit.prevent="signup"
               novalidate
             >
               <div class="mb-3">
-                <label for="emailUsr">Email</label>
+                <label for="nameUser">Nombre</label>
                 <input
-                  id="emailUsr"
+                  id="nameUser"
+                  class="form-control"
+                  v-model="name"
+                  type="text"
+                  pattern="(?=.{3,15}$)[A-ZÁÉÍÓÚ][a-zñáéíóú]+(?: [A-ZÁÉÍÓÚ][a-zñáéíóú]+)?$"
+                  required
+                />
+                <small class="invalid-feedback"
+                  >Por ejemplo: Jose, David Luiz</small
+                >
+              </div>
+              <div class="mb-3">
+                <label for="emailUser">Email</label>
+                <input
+                  id="emailUser"
                   class="form-control"
                   v-model="email"
                   type="email"
@@ -36,15 +47,15 @@
                 <small class="invalid-feedback">Email invalido</small>
               </div>
               <div class="mb-3">
-                <label for="passUsr">Contraseña</label>
+                <label for="passUser">Contraseña</label>
                 <input
-                  id="passUsr"
+                  id="passUser"
                   class="form-control"
                   v-model="password"
                   type="password"
                   required
                 />
-                <small class="invalid-feedback">Campo requerido</small>
+                <small class="invalid-feedback">Usa más de 8 caracteres</small>
               </div>
               <div
                 class="spinner-border text-primary"
@@ -53,7 +64,7 @@
               >
                 <span class="sr-only">Loading...</span>
               </div>
-              <button class="btn btn-primary btn-block">Iniciar</button>
+              <button class="btn btn-block btn-primary" v-else>Enviar</button>
             </form>
           </div>
         </div>
@@ -64,38 +75,38 @@
 
 <script>
 import axios from 'axios'
-import {msg_error, opt_toast} from '../utilities/options'
+import {opt_toast} from '../utilities/options'
 export default {
-  name: 'signin',
+  name: 'signup',
   data() {
     return {
+      name: '',
       email: '',
       password: '',
       loader: false
     }
   },
   methods: {
-    signin: function() {
-      const form = document.querySelector('#formSignin')
+    signup: function() {
+      const form = document.querySelector('#formSignup')
       if (form.checkValidity()) {
         this.loader = true
         axios
-          .post('signin', {
+          .post('signup', {
+            name: this.name,
             email: this.email,
             password: this.password
           })
           .then(res => {
-            this.$store.dispatch('saveToken', res.data)
-            this.$router.push({name: 'board'})
-          })
-          .catch(e => {
-            if (e.response.status === 403) {
-              toastr.error('datos incorrectos', null, opt_toast)
-            } else {
-              toastr.error(msg_error, null, opt_toast)
+            if (res.data.tag === 'inf')
+              toastr.info(res.data.msg, null, opt_toast)
+            else {
+              toastr.success(res.data.msg, null, opt_toast)
+              this.$router.push({name: 'signin'})
             }
+            this.loader = false
           })
-        this.loader = false
+          .catch(e => console.log(e))
       } else {
         form.classList.add('was-validated')
       }

@@ -3,6 +3,7 @@ import vueRouter from 'vue-router'
 
 import warning from './views/warning'
 import home from './views/home'
+import signup from './views/signup'
 import signin from './views/signin'
 import main_frame from './views/main_frame'
 import board from './views/board'
@@ -23,6 +24,12 @@ const router = new vueRouter({
       path: '/',
       name: 'home',
       component: home,
+      meta: {open_access: true}
+    },
+    {
+      path: '/signup',
+      name: 'signup',
+      component: signup,
       meta: {open_access: true}
     },
     {
