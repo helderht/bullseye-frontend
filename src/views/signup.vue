@@ -57,13 +57,7 @@
                 />
                 <small class="invalid-feedback">Usa más de 8 caracteres</small>
               </div>
-              <div
-                class="spinner-border text-primary"
-                v-if="loader"
-                role="status"
-              >
-                <span class="sr-only">Loading...</span>
-              </div>
+              <load v-if="loader" />
               <button class="btn btn-block btn-primary" v-else>Enviar</button>
             </form>
           </div>
@@ -75,9 +69,11 @@
 
 <script>
 import axios from 'axios'
+import load from '../components/load.vue'
 import {opt_toast} from '../utilities/options'
 export default {
   name: 'signup',
+  components: {load},
   data() {
     return {
       name: '',

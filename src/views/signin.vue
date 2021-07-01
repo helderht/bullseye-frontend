@@ -46,13 +46,7 @@
                 />
                 <small class="invalid-feedback">Campo requerido</small>
               </div>
-              <div
-                class="spinner-border text-primary"
-                v-if="loader"
-                role="status"
-              >
-                <span class="sr-only">Loading...</span>
-              </div>
+              <load v-if="loader" />
               <button class="btn btn-primary btn-block">Iniciar</button>
             </form>
           </div>
@@ -64,9 +58,11 @@
 
 <script>
 import axios from 'axios'
+import load from '../components/load.vue'
 import {msg_error, opt_toast} from '../utilities/options'
 export default {
   name: 'signin',
+  components: {load},
   data() {
     return {
       email: '',

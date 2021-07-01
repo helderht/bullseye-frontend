@@ -22,7 +22,7 @@
         </router-link>
         <router-link
           class="d-flex justify-content-between align-items-center"
-          to="/board"
+          to="/projects"
         >
           <span>Proyectos</span>
           <i class="fas fa-folder-open mr-2"></i>

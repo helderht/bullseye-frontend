@@ -1,5 +1,6 @@
 import vue from 'vue'
 import vueRouter from 'vue-router'
+import store from './store'
 
 import warning from './views/warning'
 import home from './views/home'
@@ -7,7 +8,8 @@ import signup from './views/signup'
 import signin from './views/signin'
 import main_frame from './views/main_frame'
 import board from './views/board'
-import store from './store'
+import projects from './views/projects'
+import estimates from './views/estimates'
 
 vue.use(vueRouter)
 
@@ -47,6 +49,16 @@ const router = new vueRouter({
           path: '',
           name: 'board',
           component: board
+        },
+        {
+          path: '/projects',
+          name: 'projects',
+          component: projects
+        },
+        {
+          path: '/:idp/estimates',
+          name: 'estimates',
+          component: estimates
         }
       ]
     }
