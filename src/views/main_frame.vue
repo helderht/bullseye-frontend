@@ -29,14 +29,14 @@
         </router-link>
         <router-link
           class="d-flex justify-content-between align-items-center"
-          to="/board"
+          to="/collaborations"
         >
           <span>Colaboraciones</span>
           <i class="fas fa-project-diagram mr-2"></i>
         </router-link>
         <router-link
           class="d-flex justify-content-between align-items-center"
-          to="/board"
+          to="/help"
         >
           <span>Ayuda</span>
           <i class="fas fa-life-ring mr-2"></i>

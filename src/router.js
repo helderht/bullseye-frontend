@@ -9,6 +9,7 @@ import signin from './views/signin'
 import main_frame from './views/main_frame'
 import board from './views/board'
 import projects from './views/projects'
+import collaborations from './views/collaborations'
 import estimates from './views/estimates'
 
 vue.use(vueRouter)
@@ -54,6 +55,11 @@ const router = new vueRouter({
           path: '/projects',
           name: 'projects',
           component: projects
+        },
+        {
+          path: '/collaborations',
+          name: 'callaborations',
+          component: collaborations
         },
         {
           path: '/:idp/estimates',
