@@ -1,95 +1,86 @@
 <template>
-  <div id="wrapper">
-    <div id="sidebar">
-      <div class="text-center m-4">
-        <img src="../assets/logoapp.svg" alt="logoapp" height="32px" />
+  <div>
+    <!-- nav bar -->
+    <div class="nav justify-content-between align-items-center bg-nav">
+      <div class="d-flex">
+        <button class="btn-nav d-inline d-sm-none" data-toggle="offcanvas">
+          <i class="fas fa-bars"></i>
+        </button>
+        <img
+          class="ml-2 d-none d-sm-inline"
+          src="../assets/logo-icon.svg"
+          alt="logo-icon"
+          width="32px"
+        />
+        <router-link class="link d-none d-sm-inline" to="/board">
+          <i class="fas fa-chart-area"></i> Tablero
+        </router-link>
+        <router-link class="link d-none d-sm-inline" to="/projects">
+          <i class="fas fa-folder-open"></i> Proyectos
+        </router-link>
+        <router-link class="link d-none d-sm-inline" to="/collaborations">
+          <i class="fas fa-share-alt"></i> Colaboraciones
+        </router-link>
+        <router-link class="link d-none d-sm-inline" to="help">
+          <i class="fas fa-life-ring"></i> Ayuda
+        </router-link>
       </div>
-      <div class="d-flex justify-content-center align-items-center m-4">
+      <div class="d-flex">
+        <div class="dropdown">
+          <button class="btn-nav" data-toggle="dropdown" title="Notificaciones">
+            <i class="fas fa-bell"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-right">
+            <h6 class="dropdown-header">Notificationes</h6>
+            <a class="dropdown-item" href="#">item</a>
+          </div>
+        </div>
+        <div class="dropdown">
+          <button class="btn-nav" data-toggle="dropdown" title="Usuario">
+            <i class="fas fa-user"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-right">
+            <h6 class="dropdown-header">Usuario</h6>
+            <a class="dropdown-item" href="#"><i class="fas fa-cog text-muted"></i> Perfil</a>
+            <a class="dropdown-item" @click="signout" href="#"
+              ><i class="fas fa-sign-out-alt text-muted"></i> Salir</a
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- offcanvas -->
+    <div class="offcanvas-collapse">
+      <div class="d-flex justify-content-end">
+        <button class="close" data-toggle="offcanvas">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="d-flex justify-content-center">
         <img
           class="rounded-circle"
           :src="`${link_api}assets/avatars/${$store.state.user.img}`"
-          alt="cover"
-          width="64px"
+          alt="img-user"
+          height="64px"
         />
       </div>
-      <div class="sidebar-nav">
-        <router-link
-          class="d-flex justify-content-between align-items-center"
-          to="/board"
-        >
-          <span>Tablero</span>
-          <i class="fas fa-chart-line mr-2"></i>
+      <ul class="list-group list-group-flush text-center">
+        <router-link class="list-group-item" to="/board">
+          <i class="fas fa-chart-area"></i> Tablero
         </router-link>
-        <router-link
-          class="d-flex justify-content-between align-items-center"
-          to="/projects"
-        >
-          <span>Proyectos</span>
-          <i class="fas fa-folder-open mr-2"></i>
+        <router-link class="list-group-item" to="/projects">
+          <i class="fas fa-folder-open"></i> Proyectos
         </router-link>
-        <router-link
-          class="d-flex justify-content-between align-items-center"
-          to="/collaborations"
-        >
-          <span>Colaboraciones</span>
-          <i class="fas fa-project-diagram mr-2"></i>
+        <router-link class="list-group-item" to="/collaborations">
+          <i class="fas fa-share-alt"></i> Colaboraciones
         </router-link>
-        <router-link
-          class="d-flex justify-content-between align-items-center"
-          to="/help"
-        >
-          <span>Ayuda</span>
-          <i class="fas fa-life-ring mr-2"></i>
+        <router-link class="list-group-item" to="/help">
+          <i class="fas fa-life-ring"></i> Ayuda
         </router-link>
-      </div>
+      </ul>
     </div>
-    <!-- main -->
-    <div id="page-body">
-      <nav class="nav topbar justify-content-between align-items-center">
-        <button class="btn-icon btn-bar" @click="menu">
-          <i class="fas fa-bars"></i>
-        </button>
-        <div class="d-flex">
-          <div class="dropdown">
-            <button
-              class="btn-icon btn-bar"
-              data-toggle="dropdown"
-              title="Notificaciones"
-            >
-              <i class="fas fa-bell"></i>
-              <span class="badge badge-danger">2</span>
-            </button>
-            <div class="dropdown-menu dropdown-menu-right">
-              <h6 class="dropdown-header">Notificaciones</h6>
-              <div class="responsive-v">
-                <a class="dropdown-item" href="#">
-                  <span class="d-block">Mensage</span>
-                  <span class="d-block text-right">
-                    <small class="text-muted">fecha</small>
-                  </span>
-                </a>
-              </div>
-            </div>
-          </div>
-          <div class="dropdown">
-            <button
-              class="btn-icon btn-bar"
-              data-toggle="dropdown"
-              title="Usuario"
-            >
-              <i class="fas fa-user"></i>
-            </button>
-            <div class="dropdown-menu dropdown-menu-right">
-              <h6 class="dropdown-header">Cuenta</h6>
-              <router-link class="dropdown-item" to="#">Perfil</router-link>
-              <a class="dropdown-item" href="#" @click="signout">Salir</a>
-            </div>
-          </div>
-        </div>
-      </nav>
-      <!-- main -->
-      <router-view />
-    </div>
+    <!-- router view -->
+    <router-view />
   </div>
 </template>
 

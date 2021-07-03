@@ -1,8 +1,8 @@
 <template>
   <div>
-    <!-- tools -->
-    <div class="address">
-      <p class="address-text">Proyectos</p>
+    <!-- tool bar -->
+    <div class="d-flex justify-content-between align-items-center sticky-top bg-nav p-1">
+      <p class="address">Proyectos</p>
       <div>
         <input
           class="form-control form-control-sm"
@@ -11,57 +11,61 @@
           placeholder="Buscar"
         />
       </div>
-      <div class="d-flex">
+      <div class="d-flex btn-group">
         <button
-          class="btn-icon btn-address"
+          class="btn btn-outline-light btn-sm"
           data-toggle="modal"
           data-target="#projectAdd"
+          title="Nuevo"
         >
-          <i class="fas fa-plus"></i>
+          <i class="fas fa-folder"></i>
         </button>
       </div>
     </div>
-    <!-- page -->
+    <!-- content -->
     <div class="container-fluid">
-      <load v-if="loader" />
-      <div class="row">
-        <div
-          class="col-lg-3 col-md-6 mb-3"
-          v-for="project in searchProject"
-          :key="project._id"
-        >
+      <load v-if="this.loader" />
+      <div class="row mt-4" v-else>
+        <div class="col-sm-6 col-md-4 mb-4" v-for="project in searchProject" :key="project._id">
           <div class="card">
-            <div class="card-menu">
+            <div class="card-header d-flex justify-content-between align-items-center">
               <h6 class="card-menu-title">{{ project.name }}</h6>
               <div class="dropdown">
                 <button class="btn-icon" data-toggle="dropdown">
                   <i class="fas fa-ellipsis-v"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-right">
-                  <router-link
-                    class="dropdown-item"
-                    :to="{name: 'estimates', params: {idp: project._id}}"
-                    >Ir</router-link
-                  >
+                  <h6 class="dropdown-header">Opciones</h6>
                   <a
                     class="dropdown-item"
                     @click="catchProject(project)"
                     data-toggle="modal"
                     href="#projectUpdate"
-                    >Editar</a
                   >
-                  <a class="dropdown-item" @click="getKey(project._id)" href="#"
-                    >LLave</a
-                  >
-                  <a class="dropdown-item" href="#">Eliminar</a>
+                    <i class="fas fa-pen text-muted"></i> Editar
+                  </a>
+                  <a class="dropdown-item" @click="getKey(project._id)" href="#">
+                    <i class="fas fa-key text-muted"></i> LLave
+                  </a>
+                  <a class="dropdown-item" href="#">
+                    <i class="fas fa-trash text-muted"></i> Eliminar
+                  </a>
                 </div>
               </div>
             </div>
             <div class="card-body">
               <p class="card-text">{{ project.description }}</p>
-              <small class="text-muted">{{
-                project.createdIn | formatDate
-              }}</small>
+              <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">{{
+                  project.createdIn | formatDate('DD MMM YYYY')
+                }}</small>
+                <router-link
+                  class="btn btn-outline-primary"
+                  :to="{name: 'estimates', params: {idp: project._id}}"
+                >
+                  Abrir
+                </router-link>
+              </div>
             </div>
           </div>
         </div>
@@ -124,9 +128,7 @@
                   rows="3"
                   required
                 />
-                <small class="invalid-feedback"
-                  >Escribe acerca de tu projecto</small
-                >
+                <small class="invalid-feedback">Escribe acerca de tu projecto</small>
               </div>
               <div class="d-flex justify-content-end">
                 <button class="btn btn-primary">Crear</button>
@@ -193,9 +195,7 @@
                   rows="3"
                   required
                 />
-                <small class="invalid-feedback"
-                  >Escribe acerca de tu projecto</small
-                >
+                <small class="invalid-feedback">Escribe acerca de tu proyecto</small>
               </div>
               <div class="d-flex justify-content-end">
                 <button class="btn btn-primary">Aceptar</button>
@@ -217,9 +217,7 @@
           </div>
           <div class="modal-body text-center">
             <p>{{ project_key }}</p>
-            <small class="text-muted"
-              >Comparte este código con tu equipo de trabajo</small
-            >
+            <small class="text-muted">Comparte este código con tu equipo de trabajo</small>
           </div>
         </div>
       </div>
@@ -272,8 +270,7 @@ export default {
           this.all_categories = res.data
         })
         .catch(e => {
-          if (e.response.status === 500)
-            toastr.error(msg_error, null, opt_toast)
+          if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
         })
     },
     getProjects: function() {
@@ -283,8 +280,7 @@ export default {
           this.all_projects = res.data
         })
         .catch(e => {
-          if (e.response.status === 500)
-            toastr.error(msg_error, null, opt_toast)
+          if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
         })
       this.loader = false
     },
@@ -296,8 +292,7 @@ export default {
           $('#projectKey').modal('show')
         })
         .catch(e => {
-          if (e.response.status === 404)
-            toastr.error('Proyecto no encontrado', null, opt_toast)
+          if (e.response.status === 404) toastr.error('Proyecto no encontrado', null, opt_toast)
           else toastr.error(msg_error, null, opt_toast)
         })
       this.project_key = null

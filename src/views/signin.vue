@@ -4,25 +4,16 @@
       <div class="col-md-6 col-lg-4">
         <div class="w-50 m-auto">
           <router-link to="/">
-            <img
-              class="img-fluid py-4"
-              src="../assets/logoapp.svg"
-              alt="logo"
-            />
+            <img class="img-fluid py-4" src="../assets/logo-app.svg" alt="logo-app" />
           </router-link>
         </div>
         <div class="card">
           <div class="card-body">
-            <h5 class="text-center mt-4">Bienvenido</h5>
-            <div class="w-25 m-auto py4">
+            <h5 class="text-center">Bienvenido</h5>
+            <div class="w-25 m-auto py-4">
               <img class="img-fluid" src="../assets/user.svg" alt="user" />
             </div>
-            <form
-              id="formSignin"
-              class="needs-validation"
-              @submit.prevent="signin"
-              novalidate
-            >
+            <form id="formSignin" class="needs-validation" @submit.prevent="signin" novalidate>
               <div class="mb-3">
                 <label for="emailUsr">Email</label>
                 <input
