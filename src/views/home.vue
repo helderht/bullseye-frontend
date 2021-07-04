@@ -92,7 +92,7 @@
 <script>
 import axios from 'axios'
 import load from '../components/load.vue'
-import {opt_toast} from '../utilities/options'
+import {msg_error, opt_toast} from '../utilities/options'
 export default {
   name: 'signup',
   components: {load},
@@ -123,7 +123,9 @@ export default {
             }
             this.loader = false
           })
-          .catch(e => console.log(e))
+          .catch(e => {
+            if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+          })
       } else {
         form.classList.add('was-validated')
       }

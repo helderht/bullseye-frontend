@@ -30,6 +30,9 @@
   border-radius: 0;
 }
 .list-group-item:hover {
-  background-color: #343a40;
+  background-color: #2979e1;
   color: #ffffff;
+}
+.btn-outline-light:hover {
+  color: #2979e1;
 }

@@ -10,6 +10,7 @@ import board from './views/board'
 import projects from './views/projects'
 import collaborations from './views/collaborations'
 import estimates from './views/estimates'
+import contributions from './views/contributions'
 import fp from './views/fp'
 import sp from './views/sp'
 import ucp from './views/ucp'
@@ -61,6 +62,11 @@ const router = new vueRouter({
           path: '/:idp/estimates',
           name: 'estimates',
           component: estimates
+        },
+        {
+          path: '/:idc/:idp/contributions',
+          name: 'contributions',
+          component: contributions
         },
         {
           path: '/:ide/snapshot/:ids',

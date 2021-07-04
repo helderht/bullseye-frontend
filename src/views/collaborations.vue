@@ -1,8 +1,9 @@
 <template>
   <div>
-    <div class="address">
-      <p class="address-text">Collaboraciones</p>
-      <div>
+    <!-- tool bar -->
+    <div class="d-flex justify-content-between align-items-center sticky-top bg-nav p-1">
+      <p class="address">Colaboraciones</p>
+      <div class="d-flex">
         <input
           class="form-control form-control-sm"
           v-model="collaboration_wanted"
@@ -10,36 +11,45 @@
           placeholder="Buscar"
         />
       </div>
-      <button class="btn-icon btn-address" data-toggle="modal" data-target="#join" title="Unirse">
-        <i class="fas fa-user-plus"></i>
-      </button>
+      <div class="d-flex btn-group">
+        <button
+          class="btn btn-outline-light btn-sm"
+          data-toggle="modal"
+          data-target="#join"
+          title="Unirse"
+        >
+          <i class="fas fa-user-plus"></i>
+        </button>
+      </div>
     </div>
-    <!-- page -->
+    <!-- content -->
     <div class="container-fluid">
       <load v-if="loader" />
-      <div class="row">
+      <div class="row mt-4" v-else>
         <div
-          class="col-lg-3 col-md-6"
+          class="col-md-6 col-lg-4 mb-4"
           v-for="collaboration in searchCollaboration"
           :key="collaboration._id"
         >
           <div class="card">
-            <div class="card-menu">
+            <div class="card-header justify-content-between align-items-center">
               <h6 class="card-menu-title">{{ collaboration.id_project.name }}</h6>
-              <div class="dropdown">
-                <button class="btn-icon" data-toggle="dropdown">
-                  <i class="fas fa-ellipsis-v"></i>
-                </button>
-                <div class="dropdown-menu dropdown-menu-right">
-                  <router-link class="dropdown-item" to="#">Ir</router-link>
-                </div>
-              </div>
             </div>
             <div class="card-body">
               <p class="card-text">{{ collaboration.id_project.description }}</p>
-              <small class="text-muted">{{
-                collaboration.id_project.createdIn | formatDate('DD MMM YYYY - hh:mm')
-              }}</small>
+              <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted">{{
+                  collaboration.id_project.createdIn | formatDate('DD MMM YYY')
+                }}</small>
+                <router-link
+                  class="btn btn-outline-primary"
+                  :to="{
+                    name: 'contributions',
+                    params: {idc: collaboration._id, idp: collaboration.id_project._id}
+                  }"
+                  >Abrir</router-link
+                >
+              </div>
             </div>
           </div>
         </div>
@@ -143,6 +153,7 @@ export default {
             else toastr.error(msg_error, null, opt_toast)
             this.loader = false
           })
+        this.access_key = null
         form.classList.remove('was-validated')
       } else {
         form.classList.add('was-validated')

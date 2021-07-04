@@ -26,68 +26,80 @@
       </div>
     </div>
     <!-- content -->
-    <div class="container-full">
-      <div class="row h-100">
+    <div class="container-fluid">
+      <load v-if="loader" />
+      <div class="row mt-4" v-else>
         <div class="col-md-3 mb-3">
-          <div class="head-list border-bottom">
-            <h6 class="card-menu-title">{{ project.name }}</h6>
-          </div>
-          <div class="responsive-v">
-            <load v-if="loader" />
-            <div class="list-group rounded-0" v-else>
-              <li
-                class="d-flex list-group-item justify-content-between align-item-center border-0 pl-2 pr-0"
-                v-for="estimate in searchEstimate"
-                :key="estimate._id"
-              >
-                <a
-                  class="list-item text-truncate"
-                  @click="getSnapshots(estimate._id, estimate.way)"
-                  href="#"
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h6 class="card-menu-title">Estimaciones</h6>
+              <div class="badge badge-info">{{ all_estimates.length }}</div>
+            </div>
+            <div class="responsive-v">
+              <ul class="list-group rounded-0">
+                <li
+                  class="d-flex list-group-item justify-content-between align-item-center border-0 pr-2"
+                  v-for="estimate in searchEstimate"
+                  :key="estimate._id"
                 >
-                  {{ estimate.name }}
-                </a>
-                <div class="d-flex btn-hide d-none">
-                  <button class="btn-icon text-white"><i class="fas fa-pen fa-xs"></i></button>
-                  <button class="btn-icon text-white"><i class="fas fa-trash fa-xs"></i></button>
-                </div>
-              </li>
+                  <a
+                    class="list-item text-truncate"
+                    @click="getSnapshots(estimate._id, estimate.way)"
+                    href="#"
+                  >
+                    {{ estimate.name }}
+                  </a>
+                  <div class="d-flex btn-hide d-none">
+                    <button class="btn-icon text-white"><i class="fas fa-pen fa-xs"></i></button>
+                    <button class="btn-icon text-white"><i class="fas fa-trash fa-xs"></i></button>
+                  </div>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
         <div class="col-md-3 order-md-3 mb-3">
-          <div class="head-list border-bottom">
-            <h6 class="card-menu-title">Snapshots</h6>
-          </div>
-          <div class="responsive-v">
-            <div class="list-group rounded-0">
-              <li
-                class="list-group-item d-flex justify-content-between align-items-center border-0 pl-2 pr-0"
-                v-for="snapshot in all_snapshots"
-                :key="snapshot._id"
-              >
-                <a class="list-item text-truncate" @click="showSnapshot(snapshot)" href="#">{{
-                  snapshot._id
-                }}</a>
-                <div class="d-flex btn-hide d-none">
-                  <router-link
-                    class="btn-icon text-white"
-                    :to="{name: `${way}`, params: {ide: snapshot.id_estimate, ids: snapshot._id}}"
-                  >
-                    <i class="fas fa-calculator"></i>
-                  </router-link>
-                </div>
-              </li>
+          <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h6 class="card-menu-title">Snapshot</h6>
+              <div class="badge badge-info">{{ all_snapshots.length }}</div>
+            </div>
+            <div class="responsive-v">
+              <ul class="list-group rounded-0">
+                <li
+                  class="list-group-item d-flex justify-content-between align-items-center border-0 pr-2"
+                  v-for="snapshot in all_snapshots"
+                  :key="snapshot._id"
+                >
+                  <a class="list-item text-truncate" @click="showSnapshot(snapshot)" href="#">{{
+                    snapshot._id
+                  }}</a>
+                  <div class="d-flex btn-hide d-none">
+                    <router-link
+                      class="btn-icon text-white"
+                      :to="{name: `${way}`, params: {ide: snapshot.id_estimate, ids: snapshot._id}}"
+                    >
+                      <i class="fas fa-calculator"></i>
+                    </router-link>
+                  </div>
+                </li>
+              </ul>
             </div>
           </div>
         </div>
-        <div class="col-md-6 border-left border-right mb-3">
-          <div class="head-list justify-content-center border-bottom">
-            <h6 class="card-menu-title">Información</h6>
+        <div class="col-md-6 mb-3">
+          <div class="card">
+            <div class="card-header"><h6 class="card-menu-title">Detalles</h6></div>
+            <div class="card-body">
+              <div v-if="Object.keys(snapshot_selected).length > 0">
+                <p>proyecto: {{ project.name }}</p>
+                <p>estimación: {{ estimate_last.name }}</p>
+                <p>método: {{ way }}</p>
+                <p>snapshot: {{ snapshot_selected._id }}</p>
+              </div>
+              <empty v-else message="Sin estimaciones" />
+            </div>
           </div>
-          <p>{{ estimate_last }}</p>
-          <p>{{ snapshot_selected }}</p>
-          <p>{{ way }}</p>
         </div>
       </div>
     </div>
@@ -141,10 +153,11 @@
 <script>
 import axios from 'axios'
 import load from '../components/load.vue'
+import empty from '../components/empty.vue'
 import {msg_error, opt_toast} from '../utilities/options'
 export default {
   name: 'estimates',
-  components: {load},
+  components: {load, empty},
   data() {
     return {
       tkn_app: {headers: {token: this.$store.state.token}},
@@ -188,9 +201,11 @@ export default {
         .get('estall/' + this.$route.params.idp, this.tkn_app)
         .then(res => {
           this.all_estimates = res.data
-          this.estimate_last = res.data[0]
-          // obtener snapshots de la ultima estimación
-          this.getSnapshots(this.estimate_last._id, this.estimate_last.way)
+          if (res.data.length > 0) {
+            this.estimate_last = res.data[0]
+            // obtener snapshots de la ultima estimación
+            this.getSnapshots(this.estimate_last._id, this.estimate_last.way)
+          }
           this.loader = false
         })
         .catch(e => {
