@@ -77,7 +77,7 @@ export default {
           })
           .catch(e => {
             if (e.response.status === 403) {
-              toastr.error('datos incorrectos', null, opt_toast)
+              toastr.error('Datos incorrectos', null, opt_toast)
             } else {
               toastr.error(msg_error, null, opt_toast)
             }

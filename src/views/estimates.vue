@@ -30,23 +30,28 @@
       <div class="row h-100">
         <div class="col-md-3 mb-3">
           <div class="head-list border-bottom">
-            <h6 class="card-menu-title">Proyecto</h6>
+            <h6 class="card-menu-title">{{ project.name }}</h6>
           </div>
           <div class="responsive-v">
             <load v-if="loader" />
             <div class="list-group rounded-0" v-else>
-              <button
-                type="button"
-                class="d-flex list-group-item list-group-item-action justify-content-between border-0 pl-2 pr-0"
+              <li
+                class="d-flex list-group-item justify-content-between align-item-center border-0 pl-2 pr-0"
                 v-for="estimate in searchEstimate"
                 :key="estimate._id"
               >
-                <div class="text-truncate">{{ estimate.name }}</div>
+                <a
+                  class="list-item text-truncate"
+                  @click="getSnapshots(estimate._id, estimate.way)"
+                  href="#"
+                >
+                  {{ estimate.name }}
+                </a>
                 <div class="d-flex btn-hide d-none">
                   <button class="btn-icon text-white"><i class="fas fa-pen fa-xs"></i></button>
                   <button class="btn-icon text-white"><i class="fas fa-trash fa-xs"></i></button>
                 </div>
-              </button>
+              </li>
             </div>
           </div>
         </div>
@@ -54,11 +59,35 @@
           <div class="head-list border-bottom">
             <h6 class="card-menu-title">Snapshots</h6>
           </div>
+          <div class="responsive-v">
+            <div class="list-group rounded-0">
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center border-0 pl-2 pr-0"
+                v-for="snapshot in all_snapshots"
+                :key="snapshot._id"
+              >
+                <a class="list-item text-truncate" @click="showSnapshot(snapshot)" href="#">{{
+                  snapshot._id
+                }}</a>
+                <div class="d-flex btn-hide d-none">
+                  <router-link
+                    class="btn-icon text-white"
+                    :to="{name: `${way}`, params: {ide: snapshot.id_estimate, ids: snapshot._id}}"
+                  >
+                    <i class="fas fa-calculator"></i>
+                  </router-link>
+                </div>
+              </li>
+            </div>
+          </div>
         </div>
         <div class="col-md-6 border-left border-right mb-3">
           <div class="head-list justify-content-center border-bottom">
             <h6 class="card-menu-title">Información</h6>
           </div>
+          <p>{{ estimate_last }}</p>
+          <p>{{ snapshot_selected }}</p>
+          <p>{{ way }}</p>
         </div>
       </div>
     </div>
@@ -122,11 +151,17 @@ export default {
       loader: true,
       est_name: '',
       est_way: '',
+      project: {},
       all_estimates: [],
-      estimate_wanted: ''
+      all_snapshots: [],
+      estimate_wanted: '',
+      estimate_last: {},
+      snapshot_selected: {},
+      way: ''
     }
   },
   created() {
+    this.getProject()
     this.getEstimates()
   },
   computed: {
@@ -137,17 +172,77 @@ export default {
     }
   },
   methods: {
+    getProject: function() {
+      this.loader = true
+      axios
+        .get('proonly/' + this.$route.params.idp, this.tkn_app)
+        .then(res => {
+          this.project = res.data
+        })
+        .catch(e => {
+          if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+        })
+    },
     getEstimates: function() {
       axios
         .get('estall/' + this.$route.params.idp, this.tkn_app)
         .then(res => {
           this.all_estimates = res.data
+          this.estimate_last = res.data[0]
+          // obtener snapshots de la ultima estimación
+          this.getSnapshots(this.estimate_last._id, this.estimate_last.way)
           this.loader = false
         })
         .catch(e => {
           if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
           this.loader = false
         })
+    },
+    getSnapshots: function(idest, way) {
+      switch (way) {
+        case 'fp':
+          axios
+            .get('fpall/' + idest, this.tkn_app)
+            .then(res => {
+              this.way = way
+              this.all_snapshots = res.data
+              // auto selecionar ultimo snapshot
+              this.snapshot_selected = res.data[0]
+            })
+            .catch(e => {
+              if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+            })
+          break
+        case 'sp':
+          axios
+            .get('spall/' + idest, this.tkn_app)
+            .then(res => {
+              this.way = way
+              this.all_snapshots = res.data
+              // auto selecionar ultimo snapshot
+              this.snapshot_selected = res.data[0]
+            })
+            .catch(e => {
+              if (e.response === 500) toastr.error(msg_error, null, opt_toast)
+            })
+          break
+        case 'ucp':
+          axios
+            .get('ucpall/' + idest, this.tkn_app)
+            .then(res => {
+              this.way = way
+              this.all_snapshots = res.data
+              // auto selecionar ultimo snapshot
+              this.snapshot_selected = res.data[0]
+            })
+            .catch(e => {
+              if (e.response === 500) toastr.error(msg_error, null, opt_toast)
+            })
+          break
+        default:
+          console.log('metodo de estimación invalido')
+          break
+      }
     },
     estimateAdd: function() {
       const form = document.querySelector('#formEstimateAdd')
@@ -169,13 +264,17 @@ export default {
             this.getEstimates()
           })
           .catch(e => {
-            if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+            if (e.response.status === 404) toastr.error('Método de estimación invalido')
+            else toastr.error(msg_error, null, opt_toast)
             this.loader = false
           })
         form.classList.remove('was-validated')
       } else {
         form.classList.add('was-validated')
       }
+    },
+    showSnapshot: function(snapshot) {
+      this.snapshot_selected = {...snapshot}
     }
   }
 }

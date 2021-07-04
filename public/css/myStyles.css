@@ -98,9 +98,16 @@ label {
 .bg-nav {
   background-color: #2979e1;
 }
+.list-group-item:hover > .list-item {
+  color: #ffffff;
+  text-decoration: none;
+}
 .list-group-item:hover > .btn-hide {
   display: inline !important;
 }
 .text-truncate {
   max-width: 70%;
+}
+.list-item {
+  color: #343a40;
 }
