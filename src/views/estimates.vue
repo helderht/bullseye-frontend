@@ -23,6 +23,13 @@
         <button class="btn btn-outline-light btn-sm" title="Equipo">
           <i class="fas fa-users"></i>
         </button>
+        <router-link
+          class="btn btn-outline-light btn-sm"
+          :to="{name: 'history', params: {idp: this.$route.params.idp}}"
+          title="History"
+        >
+          <i class="fas fa-history"></i>
+        </router-link>
       </div>
     </div>
     <!-- content -->
@@ -133,7 +140,7 @@
               </div>
               <div class="mb-3">
                 <label for="estWay">Método</label>
-                <select id="estWay" class="form-control" v-model="est_way">
+                <select id="estWay" class="form-control" v-model="est_way" required>
                   <option value="fp">P. Función</option>
                   <option value="sp">P. Historia</option>
                   <option value="ucp">P. Casos de uso</option>
@@ -255,7 +262,7 @@ export default {
             })
           break
         default:
-          console.log('metodo de estimación invalido')
+          toastr.warning('Método seleccionado invalido', null, opt_toast)
           break
       }
     },
@@ -274,7 +281,7 @@ export default {
             this.tkn_app
           )
           .then(res => {
-            console.log(res.data)
+            this.$store.state.socket.emit('estimate-add', {room: res.data.estimate.id_project})
             $('#estimateAdd').modal('hide')
             this.getEstimates()
           })

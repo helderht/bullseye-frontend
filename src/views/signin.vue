@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="row justify-content-center">
-      <div class="col-md-6 col-lg-4">
+      <div class="col-sm-6 col-lg-4">
         <div class="w-50 m-auto">
           <router-link to="/">
             <img class="img-fluid py-4" src="../assets/logo-app.svg" alt="logo-app" />

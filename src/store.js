@@ -2,15 +2,17 @@ import vue from 'vue'
 import vuex from 'vuex'
 import jwtDecode from 'jwt-decode'
 import moment from 'moment'
-import axios from 'axios'
+import io from 'socket.io-client'
 import router from './router'
+import {LINK_API} from './utilities/links'
 
 vue.use(vuex)
 
 export default new vuex.Store({
   state: {
     token: null,
-    user: null
+    user: null,
+    socket: null
   },
   mutations: {
     setToken(state, token) {
@@ -18,6 +20,9 @@ export default new vuex.Store({
     },
     setUser(state, user) {
       state.user = user
+    },
+    setSocket(state, socket) {
+      state.socket = socket
     }
   },
   actions: {
@@ -44,6 +49,10 @@ export default new vuex.Store({
           router.push({name: 'board'})
         }
       }
+    },
+    connectSocket({commit}) {
+      let socket = io(LINK_API)
+      commit('setSocket', socket)
     }
   }
 })

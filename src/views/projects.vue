@@ -304,7 +304,7 @@ export default {
         axios
           .post('proadd', this.project_add, this.tkn_app)
           .then(res => {
-            // TODO: joinRoom
+            this.$store.state.socket.emit('project-add', {room: res.data.added._id})
             this.project_key = res.data.key_access
             $('#projectAdd').modal('hide')
             this.getProjects()
@@ -332,7 +332,7 @@ export default {
         axios
           .post('proupdate', this.tmp_project, this.tkn_app)
           .then(res => {
-            // TODO: registrar actividad
+            this.$store.state.socket.emit('project-update', {room: res.data._id})
             $('#projectUpdate').modal('hide')
             this.getProjects()
           })

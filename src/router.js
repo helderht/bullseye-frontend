@@ -14,6 +14,7 @@ import contributions from './views/contributions'
 import fp from './views/fp'
 import sp from './views/sp'
 import ucp from './views/ucp'
+import history from './views/history'
 
 vue.use(vueRouter)
 
@@ -82,6 +83,11 @@ const router = new vueRouter({
           path: '/:ide/snapshot/:ids',
           name: 'ucp',
           component: ucp
+        },
+        {
+          path: '/:idp/history',
+          name: 'history',
+          component: history
         }
       ]
     }

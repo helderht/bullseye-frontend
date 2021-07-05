@@ -29,10 +29,25 @@
         <div class="dropdown">
           <button class="btn-nav" data-toggle="dropdown" title="Notificaciones">
             <i class="fas fa-bell"></i>
+            <span class="badge badge-info" v-if="all_notifications.length > 0">{{
+              all_notifications.length
+            }}</span>
           </button>
           <div class="dropdown-menu dropdown-menu-right">
             <h6 class="dropdown-header">Notificationes</h6>
-            <a class="dropdown-item" href="#">item</a>
+            <div class="responsive-n">
+              <a
+                class="dropdown-item"
+                v-for="notification in all_notifications"
+                :key="notification._id"
+                href="#"
+              >
+                <span class="d-block">{{ notification.message }}</span>
+                <small class="d-block text-right">{{
+                  notification.notifiedIn | formatDate()
+                }}</small>
+              </a>
+            </div>
           </div>
         </div>
         <div class="dropdown">
@@ -85,18 +100,76 @@
 </template>
 
 <script>
+import axios from 'axios'
+import moment from 'moment'
 import {LINK_API} from '../utilities/links'
+import {msg_error, opt_toast} from '../utilities/options'
 export default {
   name: 'main_frame',
   data() {
     return {
-      link_api: LINK_API
+      link_api: LINK_API,
+      tkn_api: {headers: {token: this.$store.state.token}},
+      all_notifications: []
     }
   },
-  created() {},
+  filters: {
+    formatDate: function(date) {
+      moment.locale('es')
+      return moment(date)
+        .startOf('minutes')
+        .fromNow()
+    }
+  },
+  created() {
+    this.$store.dispatch('connectSocket')
+    this.joinProAndCol()
+    this.onEventsIO()
+    this.getNotifications()
+  },
   methods: {
-    menu: () => {
-      $('#wrapper').toggleClass('toggled')
+    joinProAndCol: async function() {
+      let pro = [],
+        col = []
+
+      await axios
+        .get('proall', this.tkn_api)
+        .then(res => {
+          pro = res.data.map(elm => elm._id)
+        })
+        .catch(e => {
+          if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+        })
+      await axios
+        .get('colall', this.tkn_api)
+        .then(res => {
+          col = res.data.map(elm => elm.id_project._id)
+        })
+        .catch(e => {
+          if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+        })
+      let rooms = [...pro, ...col]
+      // join to rooms
+      this.$store.state.socket.emit('join-rooms', {client: this.$store.state.user, rooms: rooms})
+    },
+    onEventsIO: function() {
+      /* this.$store.state.socket.on('joined-rooms', data => {
+        console.log(data)
+      }) */
+      this.$store.state.socket.on('update-notifications', data => {
+        this.getNotifications()
+        console.log(data)
+      })
+    },
+    getNotifications: function() {
+      axios
+        .get('notall', this.tkn_api)
+        .then(res => {
+          this.all_notifications = res.data
+        })
+        .catch(e => {
+          if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+        })
     },
     signout: function() {
       this.$store.dispatch('signout')

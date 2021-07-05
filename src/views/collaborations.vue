@@ -144,7 +144,7 @@ export default {
             $('#join').modal('hide')
             if (res.data.tag === 'war') toastr.warning(res.data.msg, null, opt_toast)
             else {
-              // TODO: crear sala
+              this.$store.state.socket.emit('collaboration-join', {room: res.data.id_project})
               this.getCollaborations()
             }
           })
