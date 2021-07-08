@@ -20,16 +20,16 @@
         >
           <i class="fas fa-file"></i>
         </button>
-        <button class="btn btn-outline-light btn-sm" title="Equipo">
-          <i class="fas fa-users"></i>
-        </button>
         <router-link
           class="btn btn-outline-light btn-sm"
           :to="{name: 'history', params: {idp: this.$route.params.idp}}"
-          title="History"
+          title="Historial"
         >
           <i class="fas fa-history"></i>
         </router-link>
+        <button class="btn btn-outline-light btn-sm" title="Equipo">
+          <i class="fas fa-users"></i>
+        </button>
       </div>
     </div>
     <!-- content -->
@@ -78,9 +78,9 @@
                   v-for="snapshot in all_snapshots"
                   :key="snapshot._id"
                 >
-                  <a class="list-item text-truncate" @click="showSnapshot(snapshot)" href="#">{{
-                    snapshot._id
-                  }}</a>
+                  <a class="list-item text-truncate" @click="showSnapshot(snapshot)" href="#">
+                    <small class="badge">{{ snapshot.branch }}</small> @{{ snapshot._id }}
+                  </a>
                   <div class="d-flex btn-hide d-none">
                     <router-link
                       class="btn-icon text-white"

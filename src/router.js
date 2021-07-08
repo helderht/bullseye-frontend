@@ -70,17 +70,17 @@ const router = new vueRouter({
           component: contributions
         },
         {
-          path: '/:ide/snapshot/:ids',
+          path: '/:ide/:ids/shot',
           name: 'fp',
           component: fp
         },
         {
-          path: '/:ide/snapshot/:ids',
+          path: '/:ide/:ids/shot',
           name: 'sp',
           component: sp
         },
         {
-          path: '/:ide/snapshot/:ids',
+          path: '/:ide/:ids/shot',
           name: 'ucp',
           component: ucp
         },

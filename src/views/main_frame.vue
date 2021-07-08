@@ -29,7 +29,7 @@
         <div class="dropdown">
           <button class="btn-nav" data-toggle="dropdown" title="Notificaciones">
             <i class="fas fa-bell"></i>
-            <span class="badge badge-info" v-if="all_notifications.length > 0">{{
+            <span class="badge badge-ligth" v-if="all_notifications.length > 0">{{
               all_notifications.length
             }}</span>
           </button>

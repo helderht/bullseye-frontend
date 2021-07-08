@@ -183,3 +183,8 @@ label {
 .responsive-n:hover {
   overflow: auto;
 }
+.move:hover {
+  cursor: move;
+  color: #ffffff;
+  background-color: #2979e1;
+}
