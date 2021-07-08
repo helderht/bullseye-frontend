@@ -557,7 +557,9 @@ export default {
               })
             })
             .catch(e => {
-              if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+              if (e.response.status === 404)
+                toastr.error('La estimación no esiste', null, opt_toast)
+              else toastr.error(msg_error, null, opt_toast)
             })
         }
         form.classList.remove('was-validated')

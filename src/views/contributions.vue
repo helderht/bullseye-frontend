@@ -160,7 +160,7 @@ export default {
               if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
             })
           break
-        case 'ucpp':
+        case 'ucp':
           axios
             .get('ucpall/' + idest, this.tkn_api)
             .then(res => {
