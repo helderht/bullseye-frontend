@@ -371,45 +371,51 @@
               <div class="card-body">
                 <div class="row">
                   <div class="col-8">
-                    <div class="responsive-chat">
-                      <div class="d-flex justify-content-end">
-                        <div class="d-flex pt-3">
-                          <img
-                            class="order-2 mx-2"
-                            src="../assets/user.svg"
-                            alt="user"
-                            width="32px"
-                          />
-                          <div class="border border-primary px-3 pt-2">
-                            <small class="text-muted">Fecha - User</small>
-                            <p>
-                              Lorem ipsum dolor sit amet consectetur.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="d-flex justify-content-start">
-                        <div class="d-flex pt-3">
-                          <img class="mx-2" src="../assets/user.svg" alt="user" width="32px" />
-                          <div class="border border-dark px-3 pt-2">
-                            <small class="text-muted">Fecha - User</small>
-                            <p class="">
-                              Lorem ipsum dolor sit amet consectetur.
-                            </p>
+                    <div id="containerChat" class="responsive-chat mb-3">
+                      <div v-for="elm in all_messages" :key="elm._id">
+                        <div
+                          class="d-flex justify-content-start"
+                          :class="{
+                            'justify-content-end': elm.id_user._id !== $store.state.user._id
+                          }"
+                        >
+                          <div class="d-flex pt-3">
+                            <img
+                              class="mx-2"
+                              :class="{'order-2': elm.id_user._id !== $store.state.user._id}"
+                              :src="`${link_api}/assets/avatars/${elm.id_user.img}`"
+                              alt="user"
+                              width="32px"
+                              height="32px"
+                            />
+                            <div
+                              class="border border-primary px-3 pt-2"
+                              :class="{'border-dark': elm.id_user._id !== $store.state.user._id}"
+                            >
+                              <small class="text-muted"
+                                >{{ elm.id_user.name }} - {{ formatDate(elm.createdIn) }}
+                              </small>
+                              <p>{{ elm.message }}</p>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                    <div class="form">
+                    <form @submit.prevent="sendMessage">
                       <div class="input-group">
-                        <input class="form-control" type="text" placeholder="Mensaje" />
+                        <input
+                          class="form-control"
+                          v-model="message"
+                          type="text"
+                          placeholder="Mensaje"
+                        />
                         <div class="input-group-append">
                           <button class="btn btn-outline-primary">
                             <i class="fas fa-paper-plane"></i>
                           </button>
                         </div>
                       </div>
-                    </div>
+                    </form>
                   </div>
                   <div class="col-4 responsive-chat">
                     <ul class="list-group rounded-0">
@@ -557,17 +563,20 @@
 
 <script>
 import axios from 'axios'
+import moment from 'moment'
 import load from '../components/load.vue'
 import empty from '../components/empty.vue'
 import chartsp from '../components/chart_sp.vue'
 import draggable from 'vuedraggable'
 import {msg_error, opt_toast} from '../utilities/options'
+import {LINK_API} from '../utilities/links'
 import xlsx from 'xlsx'
 export default {
   name: 'sp',
   components: {load, draggable, empty, chartsp},
   data() {
     return {
+      link_api: LINK_API,
       loader: true,
       deck: [
         {img: 'dibujo0.svg', value: 0},
@@ -598,6 +607,8 @@ export default {
       file: null,
       file_data: null,
       chart: false,
+      all_messages: [],
+      message: '',
       // data save
       stories: [],
       pivot: {},
@@ -611,6 +622,7 @@ export default {
     this.getSnapshot()
     this.joinPoker()
     this.onEventsPoker()
+    this.getMessages()
   },
   computed: {
     ph_total: function() {
@@ -711,6 +723,10 @@ export default {
         this.board = board
         this.show_board = false
         if (this.board.length === this.users_connected.length) this.show_board = true
+      })
+      this.$store.state.socket.on('upload-messages', data => {
+        this.getMessages()
+        $('#containerChat').animate({scrollTop: $('#containerChat').prop('scrollHeight')}, 1000)
       })
     },
     joinPoker: function() {
@@ -889,8 +905,39 @@ export default {
       this.file = null
       this.file_data = null
     },
+    getMessages: function() {
+      axios
+        .get('mesall/' + this.$route.params.ids, this.tkn_api)
+        .then(res => {
+          this.all_messages = res.data
+        })
+        .catch(e => {
+          if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+        })
+    },
+    sendMessage: function() {
+      let data = {
+        message: this.message,
+        id_snapshot: this.$route.params.ids
+      }
+      axios
+        .post('mesadd', data, this.tkn_api)
+        .then(res => {
+          this.$store.state.socket.emit('refresh-messages', {room: this.$route.params.ids})
+        })
+        .catch(e => {
+          if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+        })
+      this.message = ''
+    },
     copyPivot: function() {
       this.copy_pivot = {...this.pivot}
+    },
+    formatDate: function(date) {
+      moment.locale('es')
+      return moment(date)
+        .startOf('minutes')
+        .fromNow()
     }
   }
 }
