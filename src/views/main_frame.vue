@@ -173,6 +173,7 @@ export default {
     },
     signout: function() {
       this.$store.dispatch('signout')
+      this.$store.state.socket.disconnect()
     }
   }
 }
