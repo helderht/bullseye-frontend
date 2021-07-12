@@ -51,7 +51,7 @@
                 >
                   <a
                     class="list-item text-truncate"
-                    @click="getSnapshots(estimate._id, estimate.way)"
+                    @click="getSnapshots(estimate, estimate.way)"
                     href="#"
                   >
                     {{ estimate.name }}
@@ -88,6 +88,9 @@
                     >
                       <i class="fas fa-calculator"></i>
                     </router-link>
+                    <button class="btn-icon text-white" @click="snapshotRemove(snapshot)">
+                      <i class="fas fa-trash"></i>
+                    </button>
                   </div>
                 </li>
               </ul>
@@ -96,15 +99,98 @@
         </div>
         <div class="col-md-6 mb-3">
           <div class="card">
-            <div class="card-header"><h6 class="card-menu-title">Detalles</h6></div>
-            <div class="card-body">
-              <div v-if="Object.keys(snapshot_selected).length > 0">
-                <p>proyecto: {{ project.name }}</p>
-                <p>estimación: {{ estimate_last.name }}</p>
-                <p>método: {{ way }}</p>
-                <p>snapshot: {{ snapshot_selected._id }}</p>
+            <div class="card-header"><h6 class="card-menu-title text-center">Detalles</h6></div>
+            <div class="responsive-v">
+              <div class="card-body">
+                <div v-if="Object.keys(snapshot_selected).length > 0">
+                  <div class="mb-3">
+                    <h6>Resultados</h6>
+                    <ul class="list-group">
+                      <div
+                        class="d-flex justify-content-between align-items-center border-bottom py-2"
+                      >
+                        <span class="text-danger">Meses</span>
+                        <span>{{ parseFloat(snapshot_selected.aprox.time).toFixed(2) }}</span>
+                      </div>
+                      <div
+                        class="d-flex justify-content-between align-items-center border-bottom py-2"
+                      >
+                        <span class="text-success">Dólares</span>
+                        <span>{{ parseFloat(snapshot_selected.aprox.cost).toFixed(2) }}</span>
+                      </div>
+                      <div
+                        class="d-flex justify-content-between align-items-center border-bottom py-2"
+                      >
+                        <span class="text-warning">Equipo</span>
+                        <span> {{ snapshot_selected.aprox.team }} </span>
+                      </div>
+                      <div
+                        class="d-flex justify-content-between align-items-center border-bottom py-2"
+                        v-if="estimate_selected.way === 'sp'"
+                      >
+                        <span class="text-info">Velocidad</span>
+                        <span> {{ parseFloat(snapshot_selected.aprox.velocity).toFixed(2) }} </span>
+                      </div>
+                      <div
+                        class="d-flex justify-content-between align-items-center border-bottom py-2"
+                        v-else
+                      >
+                        <span class="text-info">Productividad</span>
+                        <span>
+                          {{ parseFloat(snapshot_selected.aprox.productivity).toFixed(2) }}
+                        </span>
+                      </div>
+                    </ul>
+                  </div>
+                  <div class="mb-3">
+                    <h6>Parámetros</h6>
+                    <ul class="list-group">
+                      <li class="d-flex justify-content-between border-bottom py-1">
+                        <span>Horas al dia</span>
+                        <span>{{ snapshot_selected.params.hours }}</span>
+                      </li>
+                      <li class="d-flex justify-content-between border-bottom py-1">
+                        <span>Dias al mes</span>
+                        <span>{{ snapshot_selected.params.days }}</span>
+                      </li>
+                      <li class="d-flex justify-content-between border-bottom py-1">
+                        <span>Sueldo promedio por integrante</span>
+                        <span>{{ snapshot_selected.params.pays }}</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <div class="mb-3">
+                    <h6>Información</h6>
+                    <ul class="list-group">
+                      <li class="d-flex justify-content-between border-bottom py-1">
+                        <span>Proyecto</span>
+                        <span>{{ project.name }}</span>
+                      </li>
+                      <li class="d-flex justify-content-between border-bottom py-1">
+                        <span>Estimación</span>
+                        <span>{{ estimate_selected.name }}</span>
+                      </li>
+                      <li class="d-flex justify-content-between border-bottom py-1">
+                        <span>Método</span>
+                        <span>{{ way }}</span>
+                      </li>
+                      <li class="d-flex justify-content-between border-bottom py-1">
+                        <span>Snapshot</span>
+                        <span>{{ snapshot_selected._id }}</span>
+                      </li>
+                      <li class="d-flex justify-content-between border-bottom py-1">
+                        <span>Rama</span>
+                        <span>{{ snapshot_selected.branch }}</span>
+                      </li>
+                      <li class="d-flex justify-content-between border-bottom py-1">
+                        <span>Nota</span>
+                      </li>
+                      <small>{{ snapshot_selected.commit }}</small>
+                    </ul>
+                  </div>
+                </div>
+                <empty v-else message="Sin estimaciones" />
               </div>
-              <empty v-else message="Sin estimaciones" />
             </div>
           </div>
         </div>
@@ -140,7 +226,7 @@
               </div>
               <div class="mb-3">
                 <label for="estWay">Método</label>
-                <select id="estWay" class="form-control" v-model="est_way" required>
+                <select id="estWay" class="custom-select" v-model="est_way" required>
                   <option value="fp">P. Función</option>
                   <option value="sp">P. Historia</option>
                   <option value="ucp">P. Casos de uso</option>
@@ -175,7 +261,7 @@ export default {
       all_estimates: [],
       all_snapshots: [],
       estimate_wanted: '',
-      estimate_last: {},
+      estimate_selected: {},
       snapshot_selected: {},
       way: ''
     }
@@ -209,9 +295,9 @@ export default {
         .then(res => {
           this.all_estimates = res.data
           if (res.data.length > 0) {
-            this.estimate_last = res.data[0]
+            this.estimate_selected = res.data[0]
             // obtener snapshots de la ultima estimación
-            this.getSnapshots(this.estimate_last._id, this.estimate_last.way)
+            this.getSnapshots(this.estimate_selected, this.estimate_selected.way)
           }
           this.loader = false
         })
@@ -220,11 +306,12 @@ export default {
           this.loader = false
         })
     },
-    getSnapshots: function(idest, way) {
+    getSnapshots: function(estimate, way) {
+      this.estimate_selected = {...estimate}
       switch (way) {
         case 'fp':
           axios
-            .get('fpall/' + idest, this.tkn_app)
+            .get('fpall/' + estimate._id, this.tkn_app)
             .then(res => {
               this.way = way
               this.all_snapshots = res.data
@@ -237,7 +324,7 @@ export default {
           break
         case 'sp':
           axios
-            .get('spall/' + idest, this.tkn_app)
+            .get('spall/' + estimate._id, this.tkn_app)
             .then(res => {
               this.way = way
               this.all_snapshots = res.data
@@ -250,7 +337,7 @@ export default {
           break
         case 'ucp':
           axios
-            .get('ucpall/' + idest, this.tkn_app)
+            .get('ucpall/' + estimate._id, this.tkn_app)
             .then(res => {
               this.way = way
               this.all_snapshots = res.data
@@ -297,6 +384,56 @@ export default {
     },
     showSnapshot: function(snapshot) {
       this.snapshot_selected = {...snapshot}
+    },
+    snapshotRemove: function(snapshot) {
+      if (snapshot.id_user === this.$store.state.user._id && snapshot.commit !== 'Raiz') {
+        const res = confirm('¿Esta seguro de eliminar el snapshot?')
+        if (res) {
+          // verificar el método
+          switch (this.way) {
+            case 'fp':
+              axios
+                .delete('fpremove/' + snapshot._id, this.tkn_app)
+                .then(res => {
+                  this.$store.state.socket.emit('snapshot-remove', {room: this.$route.params.idp})
+                  this.getSnapshots(this.estimate_selected, this.estimate_selected.way)
+                })
+                .catch(e => {
+                  if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+                })
+              break
+            case 'sp':
+              axios
+                .delete('spremove/' + snapshot._id, this.tkn_app)
+                .then(res => {
+                  this.$store.state.socket.emit('snapshot-remove', {room: this.$route.params.idp})
+                  this.getSnapshots(this.estimate_selected, this.estimate_selected.way)
+                })
+                .catch(e => {
+                  if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+                })
+              break
+            case 'ucp':
+              axios
+                .delete('ucpremove/' + snapshot._id, this.tkn_app)
+                .then(res => {
+                  this.$store.state.socket.emit('snapshot-remove', {room: this.$route.params.idp})
+                  this.getSnapshots(this.estimate_selected, this.estimate_selected.way)
+                })
+                .catch(e => {
+                  if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+                })
+              break
+            default:
+              console.log('opción invalida')
+              break
+          }
+        }
+      } else {
+        alert(
+          'El snapshot no se puede eliminar porque es el nodo raiz o no eres el creador del snapshot'
+        )
+      }
     }
   }
 }

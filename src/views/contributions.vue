@@ -4,9 +4,6 @@
     <div class="d-flex justify-content-between align-items-center sticky-top bg-nav p-1">
       <p class="address">Contribuciones</p>
       <div class="d-flex btn-group">
-        <button class="btn btn-outline-light btn-sm" title="Nuevo">
-          <i class="fas fa-file"></i>
-        </button>
         <router-link
           class="btn btn-outline-light btn-sm"
           :to="{name: 'history', params: {idp: this.$route.params.idp}}"
@@ -19,7 +16,7 @@
     <!-- content -->
     <div class="container-fluid pt-4">
       <load v-if="loader" />
-      <div class="row">
+      <div class="row" v-else>
         <div class="col-md-3 mb-3">
           <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
@@ -32,7 +29,7 @@
                   class="list-group-item list-group-item-action border-0"
                   v-for="estimate in all_estimates"
                   :key="estimate._id"
-                  @click="getSnapshots(estimate._id, estimate.way)"
+                  @click="getSnapshots(estimate)"
                 >
                   {{ estimate.name }}
                 </button>
@@ -73,10 +70,88 @@
           <div class="card">
             <div class="card-header"><h6 class="card-menu-title text-center">Información</h6></div>
             <div class="card-body">
-              <p>proyecto: {{ project.name }}</p>
-              <p>estimación: {{ estimate_last.name }}</p>
-              <p>metodo: {{ way }}</p>
-              <p>snapshot: {{ snapshot_selected }}</p>
+              <div v-if="Object.keys(snapshot_selected).length > 0">
+                <div class="mb-3">
+                  <h6>Resultados</h6>
+                  <ul class="list-group">
+                    <div
+                      class="d-flex justify-content-between align-items-center border-bottom py-2"
+                    >
+                      <span class="text-danger">Meses</span>
+                      <span>{{ parseFloat(snapshot_selected.aprox.time).toFixed(2) }}</span>
+                    </div>
+                    <div
+                      class="d-flex justify-content-between align-items-center border-bottom py-2"
+                    >
+                      <span class="text-success">Dólares</span>
+                      <span>{{ parseFloat(snapshot_selected.aprox.cost).toFixed(2) }}</span>
+                    </div>
+                    <div
+                      class="d-flex justify-content-between align-items-center border-bottom py-2"
+                    >
+                      <span class="text-warning">Equipo</span>
+                      <span>{{ snapshot_selected.aprox.team }}</span>
+                    </div>
+                    <div
+                      class="d-flex justify-content-between align-items-center border-bottom py-2"
+                      v-if="estimate_selected.way === 'sp'"
+                    >
+                      <span class="text-info">Velocidad</span>
+                      <span>{{ parseFloat(snapshot_selected.aprox.velocity) }}</span>
+                    </div>
+                    <div
+                      class="d-flex justify-content-between align-items-center border-bottom py-2"
+                      v-else
+                    >
+                      <span class="text-info">Productividad</span>
+                      <span>{{ parseFloat(snapshot_selected.aprox.productivity) }}</span>
+                    </div>
+                  </ul>
+                </div>
+                <div class="mb-3">
+                  <h6>Parámetros</h6>
+                  <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                    <span>Horas al dia</span>
+                    <span>{{ snapshot_selected.params.hours }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                    <span>Dias al mes</span>
+                    <span>{{ snapshot_selected.params.days }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                    <span>Sueldo promedio por integrante</span>
+                    <span>{{ snapshot_selected.params.pays }}</span>
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <h6>Información</h6>
+                  <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                    <span>Proyecto</span>
+                    <span>{{ project.name }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                    <span>Estimación</span>
+                    <span>{{ estimate_selected.name }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                    <span>Método</span>
+                    <span>{{ way }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                    <span>Snapshot</span>
+                    <span>{{ snapshot_selected._id }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                    <span>Rama</span>
+                    <span>{{ snapshot_selected.branch }}</span>
+                  </div>
+                  <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+                    <small>Nota</small>
+                  </div>
+                  <p>{{ snapshot_selected.commit }}</p>
+                </div>
+              </div>
+              <empty v-else message="Sin estimaciones" />
             </div>
           </div>
         </div>
@@ -88,10 +163,11 @@
 <script>
 import axios from 'axios'
 import load from '../components/load.vue'
+import empty from '../components/empty.vue'
 import {msg_error, opt_toast} from '../utilities/options'
 export default {
   name: 'contributions',
-  components: {load},
+  components: {load, empty},
   data() {
     return {
       tkn_api: {headers: {token: this.$store.state.token}},
@@ -99,7 +175,7 @@ export default {
       project: {},
       all_estimates: [],
       all_snapshots: [],
-      estimate_last: {},
+      estimate_selected: {},
       snapshot_selected: {},
       way: ''
     }
@@ -125,8 +201,8 @@ export default {
         .then(res => {
           this.all_estimates = res.data
           if (res.data.length > 0) {
-            this.estimate_last = res.data[0]
-            this.getSnapshots(this.estimate_last._id, this.estimate_last.way)
+            this.estimate_selected = res.data[0]
+            this.getSnapshots(this.estimate_selected)
           }
         })
         .catch(e => {
@@ -134,13 +210,14 @@ export default {
         })
       this.loader = false
     },
-    getSnapshots: function(idest, way) {
-      switch (way) {
+    getSnapshots: function(estimate) {
+      this.estimate_selected = {...estimate}
+      switch (estimate.way) {
         case 'fp':
           axios
-            .get('fpall/' + idest, this.tkn_api)
+            .get('fpall/' + estimate._id, this.tkn_api)
             .then(res => {
-              this.way = way
+              this.way = estimate.way
               this.all_snapshots = res.data
               this.snapshot_selected = res.data[0]
             })
@@ -150,9 +227,9 @@ export default {
           break
         case 'sp':
           axios
-            .get('spall/' + idest, this.tkn_api)
+            .get('spall/' + estimate._id, this.tkn_api)
             .then(res => {
-              this.way = way
+              this.way = estimate.way
               this.all_snapshots = res.data
               this.snapshot_selected = res.data[0]
             })
@@ -162,9 +239,9 @@ export default {
           break
         case 'ucp':
           axios
-            .get('ucpall/' + idest, this.tkn_api)
+            .get('ucpall/' + estimate._id, this.tkn_api)
             .then(res => {
-              this.way = way
+              this.way = estimate.way
               this.all_snapshots = res.data
               this.snapshot_selected = res.data[0]
             })
