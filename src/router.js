@@ -15,6 +15,7 @@ import fp from './views/fp'
 import sp from './views/sp'
 import ucp from './views/ucp'
 import history from './views/history'
+import profile from './views/profile'
 
 vue.use(vueRouter)
 
@@ -88,6 +89,11 @@ const router = new vueRouter({
           path: '/:idp/history',
           name: 'history',
           component: history
+        },
+        {
+          path: '/profile',
+          name: 'profile',
+          component: profile
         }
       ]
     }

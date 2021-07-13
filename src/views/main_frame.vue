@@ -56,7 +56,9 @@
           </button>
           <div class="dropdown-menu dropdown-menu-right">
             <h6 class="dropdown-header">Usuario</h6>
-            <a class="dropdown-item" href="#"><i class="fas fa-cog text-muted"></i> Perfil</a>
+            <router-link class="dropdown-item" to="/profile">
+              <i class="fas fa-cog text-muted"></i> Perfil
+            </router-link>
             <a class="dropdown-item" @click="signout" href="#"
               ><i class="fas fa-sign-out-alt text-muted"></i> Salir</a
             >
