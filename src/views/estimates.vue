@@ -57,7 +57,14 @@
                     {{ estimate.name }}
                   </a>
                   <div class="d-flex btn-hide d-none">
-                    <button class="btn-icon text-white"><i class="fas fa-pen fa-xs"></i></button>
+                    <button
+                      class="btn-icon text-white"
+                      @click="catchEstimate(estimate)"
+                      data-toggle="modal"
+                      data-target="#editEstimate"
+                    >
+                      <i class="fas fa-pen fa-xs"></i>
+                    </button>
                     <button class="btn-icon text-white"><i class="fas fa-trash fa-xs"></i></button>
                   </div>
                 </li>
@@ -240,6 +247,42 @@
         </div>
       </div>
     </div>
+    <!-- modal estimate edit -->
+    <div id="editEstimate" class="modal fade">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title">Renombrar estimación</h6>
+            <button class="close" data-dismiss="modal">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form
+              id="formEditEst"
+              class="needs-validation"
+              @submit.prevent="updateEstimate"
+              novalidate
+            >
+              <div class="mb-3">
+                <label for="editname">Nombre</label>
+                <input
+                  id="editname"
+                  class="form-control"
+                  v-model="edit_estimate.name"
+                  type="text"
+                  pattern="^[a-záéíóúÁÉÍÓÚA-Z0-9\s]{3,30}$"
+                  required
+                />
+              </div>
+              <div class="d-flex justify-content-end">
+                <button class="btn btn-primary">Aceptar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -263,7 +306,8 @@ export default {
       estimate_wanted: '',
       estimate_selected: {},
       snapshot_selected: {},
-      way: ''
+      way: '',
+      edit_estimate: {}
     }
   },
   created() {
@@ -376,6 +420,27 @@ export default {
             if (e.response.status === 404) toastr.error('Método de estimación invalido')
             else toastr.error(msg_error, null, opt_toast)
             this.loader = false
+          })
+        form.classList.remove('was-validated')
+      } else {
+        form.classList.add('was-validated')
+      }
+    },
+    catchEstimate: function(estimate) {
+      this.edit_estimate = {...estimate}
+    },
+    updateEstimate: function() {
+      const form = document.querySelector('#formEditEst')
+      if (form.checkValidity()) {
+        axios
+          .post('estupdate', this.edit_estimate, this.tkn_app)
+          .then(res => {
+            this.$store.state.socket.emit('estimate-update', {room: this.$route.params.idp})
+            $('#editEstimate').modal('hide')
+            this.getEstimates()
+          })
+          .catch(e => {
+            if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
           })
         form.classList.remove('was-validated')
       } else {
