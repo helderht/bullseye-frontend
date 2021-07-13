@@ -71,7 +71,9 @@
                     >
                       <i class="fas fa-pen fa-xs"></i>
                     </button>
-                    <button class="btn-icon text-white"><i class="fas fa-trash fa-xs"></i></button>
+                    <button class="btn-icon text-white" @click="removeEstimate(estimate)">
+                      <i class="fas fa-trash fa-xs"></i>
+                    </button>
                   </div>
                 </li>
               </ul>
@@ -473,6 +475,8 @@ export default {
             else toastr.error(msg_error, null, opt_toast)
             this.loader = false
           })
+        this.est_name = ''
+        this.est_way = ''
         form.classList.remove('was-validated')
       } else {
         form.classList.add('was-validated')
@@ -542,7 +546,7 @@ export default {
                 })
               break
             default:
-              console.log('opción invalida')
+              toastr.error('opción invalida', null, opt_toast)
               break
           }
         }
@@ -560,6 +564,20 @@ export default {
           .then(res => {
             this.$store.state.socket.emit('collaboration-leave', {room: this.$route.params.idp})
             this.getTeam()
+          })
+          .catch(e => {
+            if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+          })
+      }
+    },
+    removeEstimate: function(estimate) {
+      const conf = confirm('¿Esta seguro de eliminar la estimación?')
+      if (conf) {
+        axios
+          .delete('estremove/' + estimate._id, this.tkn_app)
+          .then(res => {
+            this.$store.state.socket.emit('estimate-remove', {room: this.$route.params.idp})
+            this.getEstimates()
           })
           .catch(e => {
             if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
