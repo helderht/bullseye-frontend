@@ -27,7 +27,13 @@
         >
           <i class="fas fa-history"></i>
         </router-link>
-        <button class="btn btn-outline-light btn-sm" title="Equipo">
+        <button
+          class="btn btn-outline-light btn-sm"
+          @click="getTeam"
+          data-toggle="modal"
+          data-target="#team"
+          title="Equipo"
+        >
           <i class="fas fa-users"></i>
         </button>
       </div>
@@ -283,6 +289,39 @@
         </div>
       </div>
     </div>
+    <!-- modal team -->
+    <div id="team" class="modal fade">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title">Equipo</h6>
+            <button class="close" data-dismiss="modal">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <ul class="list-group">
+              <div
+                class="d-flex justify-content-between align-items-center border-bottom py-2"
+                v-for="elm in team"
+                :key="elm.id"
+              >
+                <img
+                  :src="`${link_api}/assets/avatars/${elm.id_user.img}`"
+                  alt="user"
+                  width="32px"
+                  height="32px"
+                />
+                <span>{{ elm.id_user.name }}</span>
+                <button class="btn-icon text-danger" @click="removeCol(elm)">
+                  <i class="fas fa-user-minus"></i>
+                </button>
+              </div>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -291,11 +330,13 @@ import axios from 'axios'
 import load from '../components/load.vue'
 import empty from '../components/empty.vue'
 import {msg_error, opt_toast} from '../utilities/options'
+import {LINK_API} from '../utilities/links'
 export default {
   name: 'estimates',
   components: {load, empty},
   data() {
     return {
+      link_api: LINK_API,
       tkn_app: {headers: {token: this.$store.state.token}},
       loader: true,
       est_name: '',
@@ -307,7 +348,8 @@ export default {
       estimate_selected: {},
       snapshot_selected: {},
       way: '',
-      edit_estimate: {}
+      edit_estimate: {},
+      team: []
     }
   },
   created() {
@@ -396,6 +438,16 @@ export default {
           toastr.warning('Método seleccionado invalido', null, opt_toast)
           break
       }
+    },
+    getTeam: function() {
+      axios
+        .get('colteam/' + this.$route.params.idp, this.tkn_app)
+        .then(res => {
+          this.team = res.data
+        })
+        .catch(e => {
+          if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+        })
     },
     estimateAdd: function() {
       const form = document.querySelector('#formEstimateAdd')
@@ -498,6 +550,20 @@ export default {
         alert(
           'El snapshot no se puede eliminar porque es el nodo raiz o no eres el creador del snapshot'
         )
+      }
+    },
+    removeCol: function(colaboration) {
+      const conf = confirm('¿Esta seguro de eliminar al colaborador del proyecto?')
+      if (conf) {
+        axios
+          .delete('colremove/' + colaboration._id, this.tkn_app)
+          .then(res => {
+            this.$store.state.socket.emit('collaboration-leave', {room: this.$route.params.idp})
+            this.getTeam()
+          })
+          .catch(e => {
+            if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+          })
       }
     }
   }

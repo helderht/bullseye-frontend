@@ -11,6 +11,9 @@
         >
           <i class="fas fa-history"></i>
         </router-link>
+        <button class="btn btn-outline-light btn-sm" @click="leaveCol">
+          <i class="fas fa-user-slash"></i>
+        </button>
       </div>
     </div>
     <!-- content -->
@@ -252,6 +255,20 @@ export default {
         default:
           toastr.warning('Método seleccionado invalido', null, opt_toast)
           break
+      }
+    },
+    leaveCol: function() {
+      const conf = confirm('¿Desea abandonar el proyecto?')
+      if (conf) {
+        axios
+          .delete('colremove/' + this.$route.params.idc, this.tkn_api)
+          .then(res => {
+            this.$store.state.socket.emit('collaboration-leave', {room: this.$route.params.idp})
+            this.$router.push({name: 'board'})
+          })
+          .catch(e => {
+            if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+          })
       }
     }
   }
