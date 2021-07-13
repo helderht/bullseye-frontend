@@ -47,7 +47,7 @@
                   <a class="dropdown-item" @click="getKey(project._id)" href="#">
                     <i class="fas fa-key text-muted"></i> LLave
                   </a>
-                  <a class="dropdown-item" href="#">
+                  <a class="dropdown-item" @click="removeProject(project)" href="#">
                     <i class="fas fa-trash text-muted"></i> Eliminar
                   </a>
                 </div>
@@ -345,6 +345,20 @@ export default {
         form.classList.remove('was-validated')
       } else {
         form.classList.add('was-validated')
+      }
+    },
+    removeProject: function(project) {
+      const conf = confirm('¿Esta seguro de eliminar el proyecto?')
+      if (conf) {
+        axios
+          .delete('proremove/' + project._id, this.tkn_app)
+          .then(res => {
+            console.log(res.data)
+            this.getProjects()
+          })
+          .catch(e => {
+            if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+          })
       }
     },
     catchProject: function(project) {
