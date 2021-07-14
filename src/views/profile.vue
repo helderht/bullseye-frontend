@@ -305,7 +305,8 @@ export default {
           .delete('userremove/' + this.confirm_password, this.tkn_api)
           .then(res => {
             $('#closeAccount').modal('hide')
-            this.$router.push({name: 'home'})
+            this.$store.state.socket.disconnect()
+            this.$store.dispatch('signout')
             toastr.success(res.data.msg, null, opt_toast)
           })
           .catch(e => {
