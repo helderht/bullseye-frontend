@@ -38,6 +38,7 @@
                   <input
                     id="accname"
                     class="form-control"
+                    v-model="me.name"
                     type="text"
                     pattern="(?=.{3,15}$)[A-ZÁÉÍÓÚ][a-zñáéíóú]+(?: [A-ZÁÉÍÓÚ][a-zñáéíóú]+)?$"
                     required
@@ -48,16 +49,29 @@
                   <input
                     id="accemail"
                     class="form-control"
+                    v-model="me.email"
                     type="email"
                     pattern="[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+"
                   />
                 </div>
                 <div class="mb-3">
                   <label for="accpass">Contraseña</label
-                  ><input id="accpass" class="form-control" type="password" />
+                  ><input
+                    id="accpass"
+                    class="form-control"
+                    v-model="editpassword"
+                    type="password"
+                  />
                 </div>
                 <button class="btn btn-primary btn-block">Aceptar</button>
               </form>
+              <button
+                class="btn btn-outline-danger btn-block mt-3"
+                data-toggle="modal"
+                data-target="#closeAccount"
+              >
+                Cerrar cuenta
+              </button>
             </div>
           </div>
         </div>
@@ -84,7 +98,6 @@
                   <i class="fas fa-tags text-dark"></i>
                 </div>
               </div>
-              <button class="btn btn-outline-danger btn-block">Eliminar cuenta</button>
             </div>
           </div>
         </div>
@@ -129,6 +142,44 @@
         </div>
       </div>
     </div>
+    <!-- modal close account -->
+    <div id="closeAccount" class="modal fade">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h6 class="modal-title">Cerrar cuenta</h6>
+            <button class="close" data-dismiss="modal">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <form
+              id="formCloseAccount"
+              class="needs-validation"
+              @submit.prevent="removeUser"
+              novalidate
+            >
+              <div class="mb-3">
+                <label for="confpass">Contraseña</label>
+                <input
+                  id="confpass"
+                  class="form-control"
+                  v-model="confirm_password"
+                  type="password"
+                  required
+                />
+                <small class="invalid-feedback"
+                  >Escriba su contraseña actual para confirmar la acción</small
+                >
+              </div>
+              <div class="d-flex justify-content-center">
+                <button class="btn btn-danger">Cerrar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -148,7 +199,10 @@ export default {
       all_categories: [],
       file_img: null,
       file_url: '',
-      preview: false
+      preview: false,
+      me: {...this.$store.state.user},
+      editpassword: '',
+      confirm_password: ''
     }
   },
   created() {
@@ -217,6 +271,48 @@ export default {
         this.file_img = null
         this.file_url = null
         this.preview = null
+        form.classList.remove('was-validated')
+      } else {
+        form.classList.add('was-validated')
+      }
+    },
+    updateAccount: function() {
+      const form = document.querySelector('#formUpdateAccount')
+      if (form.checkValidity()) {
+        let data = {}
+        if (this.editpassword === '') {
+          data = {name: this.me.name, email: this.me.email}
+        } else {
+          data = {name: this.me.name, email: this.me.email, password: this.editpassword}
+        }
+        axios
+          .post('userupdate', data, this.tkn_api)
+          .then(res => {
+            if (res.data.tag === 'suc') toastr.success(res.data.msg, null, opt_toast)
+          })
+          .catch(e => {
+            if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+          })
+        form.classList.remove('was-validated')
+      } else {
+        form.classList.add('was-validated')
+      }
+    },
+    removeUser: function() {
+      const form = document.querySelector('#formCloseAccount')
+      if (form.checkValidity()) {
+        axios
+          .delete('userremove/' + this.confirm_password, this.tkn_api)
+          .then(res => {
+            $('#closeAccount').modal('hide')
+            this.$router.push({name: 'home'})
+            toastr.success(res.data.msg, null, opt_toast)
+          })
+          .catch(e => {
+            if (e.response.status === 403) toastr.error('Contraseña incorrecta', null, opt_toast)
+            else toastr.error(msg_error, null, opt_toast)
+          })
+        this.confirm_password = ''
         form.classList.remove('was-validated')
       } else {
         form.classList.add('was-validated')
