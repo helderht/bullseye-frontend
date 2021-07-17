@@ -492,7 +492,6 @@ export default {
       axios
         .get('ucponly/' + this.$route.params.ids, this.tkn_api)
         .then(res => {
-          console.log(res.data)
           this.id_owner = res.data.id_estimate.id_owner
           this.id_project = res.data.id_estimate.id_project
           this.actors = res.data.actors
