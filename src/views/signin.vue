@@ -40,6 +40,7 @@
               <load v-if="loader" />
               <button class="btn btn-primary btn-block">Iniciar</button>
             </form>
+            <router-link to="/recovery"><small>Recuperar contraseña</small></router-link>
           </div>
         </div>
       </div>

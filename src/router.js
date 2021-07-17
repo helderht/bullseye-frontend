@@ -16,6 +16,7 @@ import sp from './views/sp'
 import ucp from './views/ucp'
 import history from './views/history'
 import profile from './views/profile'
+import recovery from './views/recovery'
 
 vue.use(vueRouter)
 
@@ -38,6 +39,12 @@ const router = new vueRouter({
       path: '/signin',
       name: 'signin',
       component: signin,
+      meta: {open_access: true}
+    },
+    {
+      path: '/recovery',
+      name: 'recovery',
+      component: recovery,
       meta: {open_access: true}
     },
     {
