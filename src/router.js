@@ -17,6 +17,11 @@ import ucp from './views/ucp'
 import history from './views/history'
 import profile from './views/profile'
 import recovery from './views/recovery'
+import docs from './views/docs'
+import fpdoc from './views/fpdoc'
+import spdoc from './views/spdoc'
+import ucpdoc from './views/ucpdoc'
+import appdoc from './views/appdoc'
 
 vue.use(vueRouter)
 
@@ -46,6 +51,33 @@ const router = new vueRouter({
       name: 'recovery',
       component: recovery,
       meta: {open_access: true}
+    },
+    {
+      path: '/docs/app',
+      component: docs,
+      meta: {open_access: true},
+      children: [
+        {
+          path: '',
+          name: 'appdoc',
+          component: appdoc
+        },
+        {
+          path: '/docs/fp',
+          name: 'fpdoc',
+          component: fpdoc
+        },
+        {
+          path: '/docs/sp',
+          name: 'spdoc',
+          component: spdoc
+        },
+        {
+          path: '/docs/ucp',
+          name: 'ucpdoc',
+          component: ucpdoc
+        }
+      ]
     },
     {
       path: '/board',

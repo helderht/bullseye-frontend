@@ -42,8 +42,10 @@
                 <small class="invalid-feedback">Usa más de 8 caracteres</small>
               </div>
               <load v-if="loader" />
-              <button class="btn btn-outline-secondary mr-1" v-else>Registrar</button>
-              <router-link class="btn btn-primary" to="/signin">Iniciar</router-link>
+              <div class="d-flex justify-content-between" v-else>
+                <button class="btn btn-outline-secondary mr-1">Registrar</button>
+                <router-link class="btn btn-primary" to="/signin">Iniciar</router-link>
+              </div>
             </form>
           </div>
         </div>
@@ -73,7 +75,7 @@
             <p>
               Enfocate en lo que es importante, evita los cálculos, bullseye proporciona un flujo de
               trabajo intuitivo.
-              <router-link to="/help">Ver tutorial</router-link>
+              <router-link to="/docs/app">Ver tutorial</router-link>
             </p>
           </div>
           <div class="col-md-4 text-center">
