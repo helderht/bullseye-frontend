@@ -104,7 +104,7 @@
                 <label for="proCategory">Categoría</label>
                 <select
                   id="proCategory"
-                  class="form-control"
+                  class="custom-select"
                   v-model="project_add.category"
                   required
                 >
@@ -171,7 +171,7 @@
                 <label for="editCategory">Categoría</label>
                 <select
                   id="editCategory"
-                  class="form-control"
+                  class="custom-select"
                   v-model="tmp_project.id_category"
                   required
                 >

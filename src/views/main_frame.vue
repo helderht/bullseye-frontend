@@ -21,7 +21,7 @@
         <router-link class="link d-none d-sm-inline" to="/collaborations">
           <i class="fas fa-share-alt"></i> Colaboraciones
         </router-link>
-        <router-link class="link d-none d-sm-inline" to="help">
+        <router-link class="link d-none d-sm-inline" to="/docs/app">
           <i class="fas fa-life-ring"></i> Ayuda
         </router-link>
       </div>
