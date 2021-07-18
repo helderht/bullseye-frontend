@@ -32,10 +32,8 @@
         <h6>Crear Estimación</h6>
         <p class="text-justify">
           Para crear una estimación es necesario un nombre o título para diferenciarlo de otra
-          estimaciones existente del mismo proyecto, definir el método de estimación y por ultimo
-          asignar un responsable de la estimación que puede ser cualquier miembro que se ha unido al
-          proyecto. El video de ejemplo muestra como crear una estimación por puntos de función que
-          tiene como responsable de la estimación al propietario del proyecto.
+          estimaciones existente del mismo proyecto, definir el método de estimación. El video de
+          ejemplo muestra como crear una estimación por puntos de función.
           <a @click="showVideo('v-estimate.mp4', 'Crear Estimación')" href="#">Ver</a>
         </p>
         <h6>Unirse a Proyecto</h6>
