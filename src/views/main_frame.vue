@@ -26,7 +26,7 @@
         </router-link>
       </div>
       <div class="d-flex">
-        <div class="dropdown">
+        <div id="dropNot" class="dropdown">
           <button class="btn-nav" data-toggle="dropdown" title="Notificaciones">
             <i class="fas fa-bell"></i>
             <span class="badge badge-ligth" v-if="all_notifications.length > 0">{{
@@ -47,6 +47,13 @@
                   notification.notifiedIn | formatDate()
                 }}</small>
               </a>
+              <a
+                class="dropdown-item d-flex justify-content-center align-items-center"
+                @click="cleanNot"
+                v-if="all_notifications.lenght > 0"
+                href="#"
+                ><i class="fas fa-trash-alt mr-1 text-danger"></i> <small>Limpiar</small></a
+              >
             </div>
           </div>
         </div>
@@ -176,6 +183,17 @@ export default {
     signout: function() {
       this.$store.dispatch('signout')
       this.$store.state.socket.disconnect()
+    },
+    cleanNot: function() {
+      axios
+        .delete('notclean', this.tkn_api)
+        .then(res => {
+          $('#dropNot').dropdown('hide')
+          this.getNotifications()
+        })
+        .catch(e => {
+          if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
+        })
     }
   }
 }
