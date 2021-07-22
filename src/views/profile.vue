@@ -15,7 +15,7 @@
         <div class="col-md-4 mb-3">
           <div class="card">
             <img
-              :src="`${link_api}/assets/avatars/${$store.state.user.img}`"
+              :src="`${link_api}assets/avatars/${$store.state.user.img}`"
               class="img-fluid m-4"
               alt=""
             />

@@ -309,7 +309,7 @@
                 :key="elm.id"
               >
                 <img
-                  :src="`${link_api}/assets/avatars/${elm.id_user.img}`"
+                  :src="`${link_api}assets/avatars/${elm.id_user.img}`"
                   alt="user"
                   width="32px"
                   height="32px"
