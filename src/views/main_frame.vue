@@ -3,7 +3,7 @@
     <!-- nav bar -->
     <div class="nav justify-content-between align-items-center bg-nav">
       <div class="d-flex">
-        <button class="btn-nav d-inline d-sm-none" data-toggle="offcanvas">
+        <button class="btn-nav d-inline d-sm-none" @click="openMenu">
           <i class="fas fa-bars"></i>
         </button>
         <img
@@ -76,7 +76,7 @@
     <!-- offcanvas -->
     <div class="offcanvas-collapse">
       <div class="d-flex justify-content-end">
-        <button class="close" data-toggle="offcanvas">
+        <button class="close" @click="openMenu">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
@@ -194,6 +194,9 @@ export default {
         .catch(e => {
           if (e.response.status === 500) toastr.error(msg_error, null, opt_toast)
         })
+    },
+    openMenu: function() {
+      $('.offcanvas-collapse').toggleClass('open')
     }
   }
 }
