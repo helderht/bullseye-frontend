@@ -98,7 +98,7 @@
         <router-link class="list-group-item" to="/collaborations">
           <i class="fas fa-share-alt"></i> Colaboraciones
         </router-link>
-        <router-link class="list-group-item" to="/help">
+        <router-link class="list-group-item" to="/docs/app">
           <i class="fas fa-life-ring"></i> Ayuda
         </router-link>
       </ul>
