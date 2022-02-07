@@ -1,4 +1,4 @@
-# Diana
+# Bullseye
 It is a web application to create estimates of time and money with algorithmic methods.
 * Points functions
 * Points of use cases
